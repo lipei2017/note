@@ -1,14 +1,34 @@
-plugins:
-  - jekyll-relative-links
-relative_links:
-  enabled: true
-  collections: true
-include:
-  - CONTRIBUTING.md
-  - README.md
-  - LICENSE.md
-  - COPYING.md
-  - CODE_OF_CONDUCT.md
-  - CONTRIBUTING.md
-  - ISSUE_TEMPLATE.md
-  - PULL_REQUEST_TEMPLATE.md
+# plugins:
+#   - jekyll-relative-links
+# relative_links:
+#   enabled: true
+#   collections: true
+# include:
+#   - CONTRIBUTING.md
+#   - README.md
+#   - LICENSE.md
+#   - COPYING.md
+#   - CODE_OF_CONDUCT.md
+#   - CONTRIBUTING.md
+#   - ISSUE_TEMPLATE.md
+#   - PULL_REQUEST_TEMPLATE.md
+
+name: 'sy7'
+description: 'sy7'
+encoding: 'utf-8'
+url: 'https://www.shuyi7.top'
+baseurl: '/'
+
+defaults:
+  - scope:
+      path: ''
+      type: 'posts'
+    value:
+      layout: 'default'
+      author: 'sy7'
+      comments: true
+      share: true
+social:
+  github: 'lipei2017@foxmail.com'
+  codepen: 'lipei2017@foxmail.com'
+comments: true
