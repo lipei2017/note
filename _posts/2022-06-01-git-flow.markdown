@@ -199,6 +199,6 @@ git push origin v2.1.1
 ```
 git checkout main
 git pull origin main
-git cherry-pick #commitid
+git cherry-pick [commit]
 git push origin main
 ```
