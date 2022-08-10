@@ -19,6 +19,10 @@ categories: jekyll update
 > - 建议用'/'分隔，有些 git 插件可以将这种形式的路径转换成文件目录形式，便于管理
 > - 20220525 为产品期望上线时间
 
+### tag 命名规范
+
+以当前分支名为 tag 名，如 release/20220530,hotfix/20220531;如果遇到 tag 同名，在原有命名上加序号如：hotfix/20220531_1
+
 ### 开发流程
 
 #### 接到新需求
@@ -90,8 +94,8 @@ git push origin release/20220530
 ```sh
 (release/20220530)
 git pull --rebase origin release/20220530
-git tag -a v2.1.0.0 -m"2022/5/30发布版本"
-git push origin v2.1.0.0
+git tag -a release/20220530 -m"2022/5/30发布版本"
+git push origin release/20220530
 ```
 
 1. 获取最新的稳定版本的主分支，如：master，并切换到该分支
@@ -105,7 +109,7 @@ git checkout -b master origin/master
 
 ```sh
 (master)
-git merge release/20220530
+git merge --no-ff release/20220530
 git push origin master
 ```
 
@@ -138,8 +142,8 @@ git push origin hotfix/20220530
 ```sh
 (hotfix/20220530)
 git pull --rebase origin hotfix/20220530
-git tag -a v2.1.1.0 -m"修复项目功能"
-git push origin v2.1.1.0
+git tag -a hotfix/20220530 -m"修复项目功能"
+git push origin hotfix/20220530
 ```
 
 5. 切到主分支，合并 hotfix 分支，并推送到远程
@@ -150,7 +154,7 @@ git fetch origin master
 git rebase origin/master
 git checkout master
 (master)
-git merge hotfix/20220530
+git merge --no-ff hotfix/20220530
 git push origin master
 ```
 
@@ -162,24 +166,24 @@ git push origin master
 git fetch origin --tags
 ```
 
-2. 基于特定版本迁出 hotfix 分支，如：hotfix/v2.1.0.0/20220531
+2. 基于特定版本迁出 hotfix 分支，如：hotfix/20220530
 
 ```sh
-git checkout -b hotfix/v2.1.0.0/20220531 v2.1.0.0
+git checkout -b hotfix/20220622 hotfix/20220530
 ```
 
 3. 修复完毕，推送到远程提测分支
 
 ```sh
-git push origin hotfix/v2.1.0.0/20220531
+git push origin hotfix/20220622
 ```
 
 4. 测试完毕，打 tag，并推送到远程
 
 ```sh
-(hotfix/v2.1.0.0/20220531)
-git tag -a v2.1.1.0 -m"修复项目功能"
-git push origin v2.1.1.0
+(hotfix/20220622)
+git tag -a hotfix/20220622 -m"修复项目功能"
+git push origin hotfix/20220622
 ```
 
 5. 如需要将该功能提交到 master 分支
