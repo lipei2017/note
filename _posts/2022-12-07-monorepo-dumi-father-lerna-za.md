@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'ts'
+title: '杂'
 date: 2022-11-14 13:21:00 +0800
 categories: jekyll update
 ---
