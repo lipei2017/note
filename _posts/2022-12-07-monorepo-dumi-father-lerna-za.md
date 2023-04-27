@@ -60,3 +60,5 @@ export default {
   },
 };
 ```
+
+father dev后使用father build，文件不改动的情况下，构建不会变化，因此构建产物会有问题

@@ -38,13 +38,13 @@ yarn install
 > + 对依赖版本进行统一管理以避免版本冲突
 >
 > npm7.x开始支持workspace
-
+  
 ### 启动father
 
 ```sh
 yarn fd
-```
-  
+``` 
+
 ### 启动dumi
 
 ```sh
@@ -66,8 +66,9 @@ import { DiscrButton } from '@supdiscr/components';
 
 ### 发布npm包
 
-本地开发完后，发布到verdaccio
+本地开发完后，构建产物并发布到verdaccio，还会自动push到remote
 
 ```sh
+yarn fb
 lerna publish
 ```

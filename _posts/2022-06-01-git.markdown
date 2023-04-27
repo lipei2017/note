@@ -1,0 +1,32 @@
+---
+layout: post
+title: 'git'
+date: 2023-01-11 15:02:18 +0800
+categories: jekyll update
+---
+
+
+## 清除git提交记录
+
+```sh
+git checkout --orphan latest_branch
+```
+
+## 删除所有tag
+
+```sh
+1、git tag -d $(git tag -l)      //删除本地tag
+2、git fetch                 //拉取远程tag
+3、git push origin --delete $(git tag -l)        //删除远程tag
+4、git tag -d $(git tag -l)  
+```
+
+## 清除git缓存
+
+```sh
+git rm -r --cached .
+git add .
+git commit -m ""
+```
+## 忽略文件夹下的文件，但是保留该文件夹
+添加 .gitkeep文件
