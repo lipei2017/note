@@ -1,0 +1,257 @@
+---
+layout: post
+title: '应用研发二部git操作规范'
+date: 2022-06-01 15:02:18 +0800
+categories: jekyll update
+---
+
+### 分支命名规范
+
+- master <i><font size=2 color=grey>产品主分支</font></i>
+- 项目/main <i><font size=2 color=grey>定制化主分支</font></i>
+- [prod\|项目]/feature/功能/20220525 <i><font size=2 color=grey>功能开发分支</font></i>
+- [prod\|项目]/release/20220525 <i><font size=2 color=grey>测试发布分支</font></i>
+- [prod\|项目]/hotfix/20220525 <i><font size=2 color=grey>hotfix 分支</font></i>
+
+> Tip: <br>
+>
+> - 产品化的需求用 prod 作为前缀，如：prod/feature/功能/20220525；定制化的需求用项目命名，如：jinji/feature/功能/20220525
+> - 建议用'/'分隔，有些 git 插件可以将这种形式的路径转换成文件目录形式，便于管理
+> - 20220525 为产品期望上线时间
+
+### tag 命名规范
+
+以当前分支名为 tag 名，如 release/20220530,hotfix/20220531;如果遇到 tag 同名，在原有命名上加序号如：hotfix/20220531_1
+
+### 开发流程
+
+#### 接到新需求
+
+1. 获取最新的稳定版本的主分支，如：master
+
+```sh
+git fetch origin master
+```
+
+2. 新建基于 master 的开发分支，如：feature/stockTransfer/20220525，并且切换到该分支
+
+```sh
+git checkout -b feature/stockTransfer/20220525 origin/master
+```
+
+#### 需求开发完毕
+
+1. 获取最新的提测分支，如：release/20220530（提测分支基于最新的稳定版本 master 迁出）
+
+```sh
+(feature/stockTransfer/20220525)
+git fetch orgin release/20220530
+```
+
+2. 将当前开发分支基于提测分支做 rebase
+
+```sh
+(feature/stockTransfer/20220525)
+git rebase origin/release/20220530
+```
+
+3. 迁出提测分支，并切换到该分支，将开发分支合并到提测分支
+
+```sh
+(feature/stockTransfer/20220525)
+git checkout -b release/20220530 origin/release/20220530
+(release/20220530)
+git merge feature/stockTransfer/20220525
+```
+
+4. 推送提测分支到远程仓库
+
+```sh
+(release/20220530)
+git push origin release/20220530
+```
+
+#### 测试过程中修复 bug
+
+1. 修复完毕，获取最新提测分支，并做 rebase
+
+```sh
+(release/20220530)
+git pull --rebase origin release/20220530
+```
+
+2. 推送到远程测试分支
+
+```sh
+(release/20220530)
+git push origin release/20220530
+```
+
+#### 测试完毕
+
+3. 基于 release 分支打 tag，并推送到远程
+
+```sh
+(release/20220530)
+git pull --rebase origin release/20220530
+git tag -a release/20220530 -m"2022/5/30发布版本"
+git push origin release/20220530
+```
+
+1. 获取最新的稳定版本的主分支，如：master，并切换到该分支
+
+```sh
+git fetch origin master
+git checkout -b master origin/master
+```
+
+2. 合并测试完毕分支到主分支，并推送到远程仓库
+
+```sh
+(master)
+git merge --no-ff release/20220530
+git push origin master
+```
+
+#### 基于主分支的 hotfix
+
+1. 获取最新的稳定版本的主分支，如：master，并切换到该分支
+
+```sh
+git fetch origin master
+git checkout -b master origin/master
+```
+
+2. 新建基于 master 的 hotfix 分支，如：hotfix/20220530，并且切换到该分支
+
+```sh
+(master)
+git checkout -b hotfix/20220530
+```
+
+3. 修复完毕，推送到远程提测分支
+
+```sh
+(hotfix/20220530)
+git pull --rebase origin hotfix/20220530
+git push origin hotfix/20220530
+```
+
+4. 测试完毕，基于 hotfix 分支打 tag，并推送到远程
+
+```sh
+(hotfix/20220530)
+git pull --rebase origin hotfix/20220530
+git tag -a hotfix/20220530 -m"修复项目功能"
+git push origin hotfix/20220530
+```
+
+5. 切到主分支，合并 hotfix 分支，并推送到远程
+
+```sh
+(hotfix/20220530)
+git fetch origin master
+git rebase origin/master
+git checkout master
+(master)
+git merge --no-ff hotfix/20220530
+git push origin master
+```
+
+#### 基于特定版本的 hotfix
+
+1. 获取远程 tag
+
+```sh
+git fetch origin --tags
+```
+
+2. 基于特定版本迁出 hotfix 分支，如：hotfix/20220530
+
+```sh
+git checkout -b hotfix/20220622 hotfix/20220530
+```
+
+3. 修复完毕，推送到远程提测分支
+
+```sh
+git push origin hotfix/20220622
+```
+
+4. 测试完毕，打 tag，并推送到远程
+
+```sh
+(hotfix/20220622)
+git tag -a hotfix/20220622 -m"修复项目功能"
+git push origin hotfix/20220622
+```
+
+5. 如需要将该功能提交到 master 分支
+
+```sh
+git checkout master
+git pull origin master
+git cherry-pick [commitHash]
+git push origin master
+```
+
+#### 发现不能交付的 feature 已合并到 release 分支
+
+- 使用 git revert
+
+1. 查看该 feature 对应的[commitHash]
+
+```sh
+(release/20220530)
+git log
+```
+
+2. 撤销
+
+单个 commit，[commitHash]
+
+```sh
+(release/20220530)
+git revert [commitHash]
+```
+
+多个 commit，[commitHashA]~[commitHashB]
+
+```sh
+(release/20220530)
+git revert [commitHashA]..[commitHashB]
+```
+
+> commitHashA 必须早于 commitHashB
+
+- 使用 git cherry-pick
+
+1. 新建 release 分支
+
+```sh
+git fetch origin master
+git checkout -b release/20220530/rebuild master
+```
+
+2. pick 对应[commitHash]
+
+```sh
+(release/20220530/rebuild)
+git cherry-pick [commitHash]
+```
+
+多个提交[commitHashA]~[commitHashB]
+
+```sh
+(release/20220530/rebuild)
+git cherry-pick [commitHashA]^..[commitHashB]
+```
+
+> commitHashA 必须早于 commitHashB
+
+3. 提交到远程仓库
+
+```sh
+(release/20220530/rebuild)
+git push origin release/20220530/rebuild
+```
