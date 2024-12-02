@@ -1,0 +1,54 @@
+---
+layout: post
+title: 'todo'
+date: 2024-11-21 08:02:18 +0800
+categories: jekyll update
+---
+
+1. axios axios.post第二个参数一定要传，不然拦截器设置Content-Type会不成功
+
+```js
+import './App.css';
+import { useEffect } from 'react';
+import axios from 'axios';
+import CryptoJS from 'crypto-js';
+
+function App() {
+  useEffect(() => {
+    // 拦截器拼接请求数据
+    axios.interceptors.request.use(
+      function (config) {
+        const { method, headers, url } = config;
+        const HTTPSchema = (method ?? '').toUpperCase();
+        const HTTPURI = new URL(url).pathname ?? '';
+        const HTTPContentType = headers['Content-Type'] ?? '';
+        const CanonicalRequestString = `${HTTPSchema}\n${HTTPURI}\n${HTTPContentType}\n\n\n`;
+        const hash = CryptoJS.HmacSHA256(
+          CanonicalRequestString,
+          '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'
+        );
+        config.headers['Authorization'] = `Sign suplink-${hash}`;
+        return config;
+      },
+      function (error) {
+        return Promise.reject(error);
+      }
+    );
+    axios
+      .post(
+        'http://192.168.8.84:8042/suplink/openapi/v1/notify',
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      .then((res) => console.log(res));
+  });
+  return <div className='App'></div>;
+}
+
+export default App;
+
+```

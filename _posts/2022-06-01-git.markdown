@@ -40,10 +40,14 @@ git commit -m ""
 `git remote set_url` 更换地址
 `git remote set-url origin remote_git_address`
 
-# 查看npm, yarn全局安装过的包
+## You can view all of your settings and where they are coming from using
 
+```bash
+git config --list --show-origin
 ```
-npm list -g --depth 0
 
-yarn global list
+## 提交并且发起merge request
+
+```bash
+git push origin HEAD:refs/for/develop
 ```
